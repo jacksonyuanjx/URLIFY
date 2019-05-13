@@ -1,15 +1,12 @@
 import React from 'react';
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View, Modal, TouchableOpacity, ScrollView, Linking } from 'react-native';
 
 import styles from './styles';
 
 const UrlModal = props => {
-    const { responseReceived, onCloseModal, responseUrls, onUrlBtnPress, ...attributes } = props;
-    const array = ['test1', 'test2', 'test3', 'test4'];
-    
+    const { responseReceived, onCloseModal, responseUrls, ...attributes } = props;
 
-    return(
+    return (
         <Modal visible={responseReceived} transparent={true}>
             <View style={styles.modalBackground}>
                 <View style={styles.urlModalWrapper}>

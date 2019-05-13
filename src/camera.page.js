@@ -4,7 +4,7 @@ import { Camera, Permissions } from 'expo';
 import Toolbar from './toolbar.component';
 
 import Environment from '../config/environment';  // Vision API key is stored here
-import Gallery from './gallery.component';
+// import Gallery from './gallery.component';
 
 // importing modals
 import Loader from './loader.component';
@@ -27,34 +27,17 @@ export default class CameraPage extends React.Component {
         badResponseReceived: false,
         responseReceived: false,
         loading: false,
-        responseUrls: [],
-        activeUrl: null
+        responseUrls: []
     };
 
     // updates state with values passed into these functions
     setFlashMode = (flashMode) => this.setState({ flashMode }); 
     setCameraType = (cameraType) => this.setState({ cameraType });
 
-    // sets capturing state to true, func will be called everytime capture btn is pressed
-    handleCaptureIn = () => this.setState({ capturing: true});
-
-    // attempts to stop recording video if 'capturing' is set to 'true', using the stopRecording() method
-    handleCaptureOut = () => {
-        if (this.state.capturing)
-            this.camera.stopRecording();
-    };
-
     // uses takePictureAsync() of the camera component to take photo, add returned data to captures[], set 'capturing' to 'false'
     handleShortCapture = async () => {
         const photoData = await this.camera.takePictureAsync();
         this.setState({ capturing: false, captures: [photoData, ...this.state.captures] })
-    };
-
-    // uses recordAsync() of camera component to tell camera to start recording video, called from Toolbar component
-    // save returned data in captures[] using ES6 array spreading
-    handleLongCapture = async () => {
-        const videoData = await this.camera.recordAsync();
-        this.setState({ capturing: false, captures: [videoData, ...this.state.captures] });
     };
 
 
@@ -67,26 +50,8 @@ export default class CameraPage extends React.Component {
         this.setState({ hasCameraPermission });
     };
 
-    async componentWillMount() {
-        console.log("componentWillMount()!!!");
-    }
 
-    detectText = async () => {
-        try {
-          const options = {
-            quality: 0.8,
-            base64: true,
-            skipProcessing: true,
-          };
-          const uri = await this.camera.takePictureAsync(options);
-        //   const visionResp = await RNTextDetector.detectFromUri(uri);
-          console.log('visionResp', visionResp);
-        } catch (e) {
-          console.warn(e);
-        }
-    };
-
-    // helper function that detects url according to RFC 1738 spec.
+    // Helper function that detects url according to RFC 1738 spec.
     // Regex from here: https://stackoverflow.com/questions/1500260/detect-urls-in-text-with-javascript
     urlify = async (text) => {
         var urlRegex = /((?:(http|https|Http|Https|rtsp|Rtsp):\/\/(?:(?:[a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\,\;\?\&\=]|(?:\%[a-fA-F0-9]{2})){1,64}(?:\:(?:[a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\,\;\?\&\=]|(?:\%[a-fA-F0-9]{2})){1,25})?\@)?)?((?:(?:[a-zA-Z0-9][a-zA-Z0-9\-]{0,64}\.)+(?:(?:aero|arpa|asia|a[cdefgilmnoqrstuwxz])|(?:biz|b[abdefghijmnorstvwyz])|(?:cat|com|coop|c[acdfghiklmnoruvxyz])|d[ejkmoz]|(?:edu|e[cegrstu])|f[ijkmor]|(?:gov|g[abdefghilmnpqrstuwy])|h[kmnrtu]|(?:info|int|i[delmnoqrst])|(?:jobs|j[emop])|k[eghimnrwyz]|l[abcikrstuvy]|(?:mil|mobi|museum|m[acdghklmnopqrstuvwxyz])|(?:name|net|n[acefgilopruz])|(?:org|om)|(?:pro|p[aefghklmnrstwy])|qa|r[eouw]|s[abcdeghijklmnortuvyz]|(?:tel|travel|t[cdfghjklmnoprtvwz])|u[agkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw]))|(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[0-9])))(?:\:\d{1,5})?)(\/(?:(?:[a-zA-Z0-9\;\/\?\:\@\&\=\#\~\-\.\+\!\*\'\(\)\,\_])|(?:\%[a-fA-F0-9]{2}))*)?(?:\b|$)/gi;
@@ -96,15 +61,12 @@ export default class CameraPage extends React.Component {
         return text.match(urlRegex);
     }
 
+    // Closes modal on 'close' button press
     closeModal = async () => {
         this.setState({responseReceived: false, badResponseReceived: false});
     }
 
-    handleUrlBtnPress = async (url) => {
-        console.log(url);
-    }
-
-
+    // Helper function that sends POST request to Google Vision API and receives response
     submitToGoogle = async () => {
         try {
             this.setState({ uploading: true });
@@ -152,11 +114,11 @@ export default class CameraPage extends React.Component {
                 let text = responseParsed.responses[0].fullTextAnnotation.text;
                 this.urlify(text).then((result) => {
                     if (result != null) {
-                        console.log(result);
+                        // console.log(result);
                         // iterate through result and present in modal, set responseReceived to 'true'
                         this.setState({responseUrls: result, responseReceived: true});
                     } else {
-                        console.log("no match detected!");
+                        // console.log("no match detected!");
                         // set badResponseReceived to 'true'
                         this.setState({badResponseReceived: true});
                     }
@@ -164,10 +126,12 @@ export default class CameraPage extends React.Component {
             } catch(err) {
                 // will often be caught here if picture is too blurry and API response produces undefined 'text' key in JSON
                 // console.log(err);
-                console.log("response has undefined text field");
+                // console.log("response has undefined text field");
+                // show badResp modal
                 this.setState({badResponseReceived: true});
             }
             this.setState({loading: false});
+
             this.setState({
                 googleResponse: responseJson,
                 uploading: false
@@ -181,6 +145,7 @@ export default class CameraPage extends React.Component {
     render() {
         const { hasCameraPermission, flashMode, cameraType, capturing, captures, responseUrls } = this.state;   // why gotta do this? why can't just access this.state.____
 
+        // Note (future development): handle case where user accidentally declines permission, allow them to redefine permissions
         if (hasCameraPermission === null) {
             return <View />;  // user has not denied or accepted permissions
         } else if (hasCameraPermission === false) {
@@ -200,15 +165,14 @@ export default class CameraPage extends React.Component {
                             ref={camera => this.camera = camera}/>
                 </View>
 
-                {captures.length > 0 && <Gallery captures={captures}/>}
+                {/* {captures.length > 0 && <Gallery captures={captures}/>} */}
 
                 <Loader loading={this.state.loading} />
                 <BadRespModal badResponseReceived={this.state.badResponseReceived}  
                               onCloseModal={this.closeModal} />
                 <UrlModal responseReceived={this.state.responseReceived} 
                           responseUrls={this.state.responseUrls} 
-                          onCloseModal={this.closeModal} 
-                          onUrlBtnPress={this.handleUrlBtnPress.bind(this)} />
+                          onCloseModal={this.closeModal} />
 
                 <Toolbar 
                     capturing={capturing}
@@ -216,12 +180,11 @@ export default class CameraPage extends React.Component {
                     cameraType={cameraType}
                     setFlashMode={this.setFlashMode}
                     setCameraType={this.setCameraType}
-                    onCaptureIn={this.handleCaptureIn}
-                    onCaptureOut={this.handleCaptureOut}
-                    onLongCapture={this.handleLongCapture}
                     onShortCapture={this.submitToGoogle}
                 />
             </React.Fragment>
         );
     };
 };
+
+// followed this tutorial for initializing the camera: https://www.codementor.io/foysalit/building-a-camera-app-with-react-native-r8up5685v

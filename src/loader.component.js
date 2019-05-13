@@ -4,10 +4,8 @@ import { View, Modal, ActivityIndicator } from 'react-native';
 import styles from './styles';
 
 const Loader = props => {
-    const {
-      loading,
-      ...attributes
-    } = props;
+    const { loading, ...attributes } = props;
+    
     return (
       <Modal visible={loading} transparent={true}>
           <View style={styles.modalBackground}>  

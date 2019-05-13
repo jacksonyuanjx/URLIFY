@@ -36,27 +36,27 @@ export default StyleSheet.create({
         width: 80,
         height: 80,
     },
-    captureBtnInternal: {
-        // renders a red circle inside the capture button to indicate that the camera is either recording a video or taking a picture
-        width: 76,
-        height: 76,
-        borderWidth: 2,
-        borderRadius: 76,
-        backgroundColor: "red",
-        borderColor: "transparent",
-    },
-    galleryContainer: { 
-        bottom: 100 
-    },
-    galleryImageContainer: { 
-        width: 75, 
-        height: 75, 
-        marginRight: 5 
-    },
-    galleryImage: { 
-        width: 75, 
-        height: 75 
-    },
+    // captureBtnInternal: {
+    //     // renders a red circle inside the capture button to indicate that the camera is either recording a video or taking a picture
+    //     width: 76,
+    //     height: 76,
+    //     borderWidth: 2,
+    //     borderRadius: 76,
+    //     backgroundColor: "red",
+    //     borderColor: "transparent",
+    // },
+    // galleryContainer: { 
+    //     bottom: 100 
+    // },
+    // galleryImageContainer: { 
+    //     width: 75, 
+    //     height: 75, 
+    //     marginRight: 5 
+    // },
+    // galleryImage: { 
+    //     width: 75, 
+    //     height: 75 
+    // },
     modalBackground: {
         flex: 1,
         alignItems: 'center',
@@ -80,7 +80,7 @@ export default StyleSheet.create({
         borderRadius: 10,
     },
     badRespModalWrapper: {
-        backgroundColor: '#d4d7db',
+        backgroundColor: '#FFFFFF',
         height: 125,
         width: 150,
         borderRadius: 10,
@@ -94,7 +94,9 @@ export default StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#cdd1d6',
+        backgroundColor: '#f4f5f7',
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
     },
     closeButtonUrlModal: {
         height: 40,
@@ -102,7 +104,7 @@ export default StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#cdd1d6',
+        backgroundColor: '#f4f5f7',
         borderBottomLeftRadius: 10,
         borderBottomRightRadius: 10,
     },
@@ -115,6 +117,13 @@ export default StyleSheet.create({
         height: 10,
         width: 200,
         backgroundColor: '#FFFFFF',
+    },
+    spacerBadResp: {
+        height: 17.5,
+        width: 150,
+        backgroundColor: '#FFFFFF',
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
     },
     urlItem: {
         width: 200,
