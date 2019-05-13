@@ -4,8 +4,12 @@ import { Camera, Permissions } from 'expo';
 import Toolbar from './toolbar.component';
 
 import Environment from '../config/environment';  // Vision API key is stored here
-import Loader from './loader.component';
 import Gallery from './gallery.component';
+
+// importing modals
+import Loader from './loader.component';
+import UrlModal from './url_modal.component';
+import BadRespModal from './badResp_modal.component';
 
 import styles from './styles';
 
@@ -20,8 +24,11 @@ export default class CameraPage extends React.Component {
         // start the back camera by default
         cameraType: Camera.Constants.Type.back,
         hasCameraPermission: null,   // to access device camera, user needs to permit access
+        badResponseReceived: false,
         responseReceived: false,
         loading: false,
+        responseUrls: [],
+        activeUrl: null
     };
 
     // updates state with values passed into these functions
@@ -89,6 +96,13 @@ export default class CameraPage extends React.Component {
         return text.match(urlRegex);
     }
 
+    closeModal = async () => {
+        this.setState({responseReceived: false, badResponseReceived: false});
+    }
+
+    handleUrlBtnPress = async (url) => {
+        console.log(url);
+    }
 
 
     submitToGoogle = async () => {
@@ -139,14 +153,19 @@ export default class CameraPage extends React.Component {
                 this.urlify(text).then((result) => {
                     if (result != null) {
                         console.log(result);
+                        // iterate through result and present in modal, set responseReceived to 'true'
+                        this.setState({responseUrls: result, responseReceived: true});
                     } else {
                         console.log("no match detected!");
+                        // set badResponseReceived to 'true'
+                        this.setState({badResponseReceived: true});
                     }
                 });
             } catch(err) {
                 // will often be caught here if picture is too blurry and API response produces undefined 'text' key in JSON
                 // console.log(err);
                 console.log("response has undefined text field");
+                this.setState({badResponseReceived: true});
             }
             this.setState({loading: false});
             this.setState({
@@ -160,7 +179,7 @@ export default class CameraPage extends React.Component {
     
 
     render() {
-        const { hasCameraPermission, flashMode, cameraType, capturing, captures } = this.state;   // why gotta do this? why can't just access this.state.____
+        const { hasCameraPermission, flashMode, cameraType, capturing, captures, responseUrls } = this.state;   // why gotta do this? why can't just access this.state.____
 
         if (hasCameraPermission === null) {
             return <View />;  // user has not denied or accepted permissions
@@ -184,6 +203,12 @@ export default class CameraPage extends React.Component {
                 {captures.length > 0 && <Gallery captures={captures}/>}
 
                 <Loader loading={this.state.loading} />
+                <BadRespModal badResponseReceived={this.state.badResponseReceived}  
+                              onCloseModal={this.closeModal} />
+                <UrlModal responseReceived={this.state.responseReceived} 
+                          responseUrls={this.state.responseUrls} 
+                          onCloseModal={this.closeModal} 
+                          onUrlBtnPress={this.handleUrlBtnPress.bind(this)} />
 
                 <Toolbar 
                     capturing={capturing}

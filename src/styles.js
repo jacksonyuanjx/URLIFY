@@ -75,17 +75,52 @@ export default StyleSheet.create({
     },
     urlModalWrapper: {
         backgroundColor: '#FFFFFF',
-        height: 100,
-        width: 150,
+        height: 175,
+        width: 200,
         borderRadius: 10,
     },
     badRespModalWrapper: {
-        backgroundColor: '#FFFFFF',
-        height: 75,
+        backgroundColor: '#d4d7db',
+        height: 125,
         width: 150,
         borderRadius: 10,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-around'
-    }
+        justifyContent: 'space-around',
+    },
+    closeButton: {
+        height: 40,
+        width: 150,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#cdd1d6',
+    },
+    closeButtonUrlModal: {
+        height: 40,
+        width: 200,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#cdd1d6',
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+    },
+    urlModalTitle: {
+        fontWeight: 'bold',
+        textAlign: 'center',
+        fontSize: 20
+    },
+    spacer: {
+        height: 10,
+        width: 200,
+        backgroundColor: '#FFFFFF',
+    },
+    urlItem: {
+        width: 200,
+        color: '#000000',
+        fontSize: 20,
+        textAlign: 'center',
+        alignItems: 'center'
+    },
 });
