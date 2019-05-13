@@ -2,9 +2,9 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { Camera, Permissions } from 'expo';
 import Toolbar from './toolbar.component';
-import RNTextDetector from 'react-native-text-detector';
 
-import Environment from '../config/environment';
+import Environment from '../config/environment';  // Vision API key is stored here
+import Loader from './loader.component';
 import Gallery from './gallery.component';
 
 import styles from './styles';
@@ -20,6 +20,8 @@ export default class CameraPage extends React.Component {
         // start the back camera by default
         cameraType: Camera.Constants.Type.back,
         hasCameraPermission: null,   // to access device camera, user needs to permit access
+        responseReceived: false,
+        loading: false,
     };
 
     // updates state with values passed into these functions
@@ -58,6 +60,10 @@ export default class CameraPage extends React.Component {
         this.setState({ hasCameraPermission });
     };
 
+    async componentWillMount() {
+        console.log("componentWillMount()!!!");
+    }
+
     detectText = async () => {
         try {
           const options = {
@@ -73,14 +79,17 @@ export default class CameraPage extends React.Component {
         }
     };
 
-    // helper function that detects url (does not detect urls beginning w/ "www.")
+    // helper function that detects url according to RFC 1738 spec.
+    // Regex from here: https://stackoverflow.com/questions/1500260/detect-urls-in-text-with-javascript
     urlify = async (text) => {
-        var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        var urlRegex = /((?:(http|https|Http|Https|rtsp|Rtsp):\/\/(?:(?:[a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\,\;\?\&\=]|(?:\%[a-fA-F0-9]{2})){1,64}(?:\:(?:[a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\,\;\?\&\=]|(?:\%[a-fA-F0-9]{2})){1,25})?\@)?)?((?:(?:[a-zA-Z0-9][a-zA-Z0-9\-]{0,64}\.)+(?:(?:aero|arpa|asia|a[cdefgilmnoqrstuwxz])|(?:biz|b[abdefghijmnorstvwyz])|(?:cat|com|coop|c[acdfghiklmnoruvxyz])|d[ejkmoz]|(?:edu|e[cegrstu])|f[ijkmor]|(?:gov|g[abdefghilmnpqrstuwy])|h[kmnrtu]|(?:info|int|i[delmnoqrst])|(?:jobs|j[emop])|k[eghimnrwyz]|l[abcikrstuvy]|(?:mil|mobi|museum|m[acdghklmnopqrstuvwxyz])|(?:name|net|n[acefgilopruz])|(?:org|om)|(?:pro|p[aefghklmnrstwy])|qa|r[eouw]|s[abcdeghijklmnortuvyz]|(?:tel|travel|t[cdfghjklmnoprtvwz])|u[agkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw]))|(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[0-9])))(?:\:\d{1,5})?)(\/(?:(?:[a-zA-Z0-9\;\/\?\:\@\&\=\#\~\-\.\+\!\*\'\(\)\,\_])|(?:\%[a-fA-F0-9]{2}))*)?(?:\b|$)/gi;
         // return text.replace(urlRegex, function(url) {
         //     return '<a href="' + url + '">' + url + '</a>';
         // });
         return text.match(urlRegex);
     }
+
+
 
     submitToGoogle = async () => {
         try {
@@ -92,6 +101,10 @@ export default class CameraPage extends React.Component {
                 skipProcessing: true,
             };
             const uri = await this.camera.takePictureAsync(options);
+
+            // set loader modal visibility to true
+            this.setState({loading: true});
+
             // console.log(uri.base64);
             let body = JSON.stringify({
                 requests: [
@@ -121,10 +134,21 @@ export default class CameraPage extends React.Component {
             // console.log(responseJson);
             let responseParsed = JSON.parse(JSON.stringify(responseJson));
             // console.log(responseParsed.responses[0].fullTextAnnotation.text);
-            let text = responseParsed.responses[0].fullTextAnnotation.text;
-            this.urlify(text).then((result) => {
-                console.log(result[0]);
-            });
+            try {
+                let text = responseParsed.responses[0].fullTextAnnotation.text;
+                this.urlify(text).then((result) => {
+                    if (result != null) {
+                        console.log(result);
+                    } else {
+                        console.log("no match detected!");
+                    }
+                });
+            } catch(err) {
+                // will often be caught here if picture is too blurry and API response produces undefined 'text' key in JSON
+                // console.log(err);
+                console.log("response has undefined text field");
+            }
+            this.setState({loading: false});
             this.setState({
                 googleResponse: responseJson,
                 uploading: false
@@ -158,6 +182,8 @@ export default class CameraPage extends React.Component {
                 </View>
 
                 {captures.length > 0 && <Gallery captures={captures}/>}
+
+                <Loader loading={this.state.loading} />
 
                 <Toolbar 
                     capturing={capturing}

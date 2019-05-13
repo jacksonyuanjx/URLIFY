@@ -57,4 +57,35 @@ export default StyleSheet.create({
         width: 75, 
         height: 75 
     },
+    modalBackground: {
+        flex: 1,
+        alignItems: 'center',
+        flexDirection: 'column',
+        justifyContent: 'space-around',
+        backgroundColor: '#00000040'
+    },
+    activityIndicatorWrapper: {
+        backgroundColor: '#FFFFFF',
+        height: 100,
+        width: 100,
+        borderRadius: 10,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-around'
+    },
+    urlModalWrapper: {
+        backgroundColor: '#FFFFFF',
+        height: 100,
+        width: 150,
+        borderRadius: 10,
+    },
+    badRespModalWrapper: {
+        backgroundColor: '#FFFFFF',
+        height: 75,
+        width: 150,
+        borderRadius: 10,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-around'
+    }
 });
