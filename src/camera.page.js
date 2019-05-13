@@ -86,7 +86,7 @@ export default class CameraPage extends React.Component {
                 requests: [
                     {
                         features: [
-                            { type: 'TEXT_DETECTION', maxResults: 5 }
+                            { type: 'DOCUMENT_TEXT_DETECTION', maxResults: 5 }
                         ],
                         image: {
                             content: uri.base64
