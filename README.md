@@ -4,6 +4,7 @@ React-native app developed using Google Vision's OCR API
 Ever had someone write down an incredibly long link and it's just so mind-numbing tedious to type it out to access it? I've been there too! That's why URLIFY is here to save the day!! :) 
 
 # Want to try it?
+- Demo Video: https://www.youtube.com/watch?v=TB7x2hCCM5I
 - Download the free Expo app on your device
   - Android: https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en_CA
   - iOS: https://itunes.apple.com/us/app/expo-client/id982107779?mt=8
